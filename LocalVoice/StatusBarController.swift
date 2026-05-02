@@ -93,6 +93,10 @@ final class StatusBarController {
         appState.selectDevice(id: deviceID)
     }
 
+    @objc private func toggleOllama() {
+        appState.ollamaEnabled.toggle()
+    }
+
     // MARK: - Observation
 
     private func observeState() {
@@ -118,12 +122,19 @@ final class StatusBarController {
             .store(in: &cancellables)
 
         appState.$ollamaAvailable
+            .combineLatest(appState.$ollamaEnabled)
             .receive(on: RunLoop.main)
-            .sink { [weak self] available in
-                self?.ollamaMenuItem?.title = available
-                    ? "Ollama: running ✓"
-                    : "Ollama: not running — tap to install"
-                self?.ollamaMenuItem?.action = available ? nil : #selector(self?.showOllamaInstructions)
+            .sink { [weak self] available, enabled in
+                guard let self else { return }
+                if !available {
+                    self.ollamaMenuItem?.title = "Ollama: not running — tap to install"
+                    self.ollamaMenuItem?.action = #selector(self.showOllamaInstructions)
+                    self.ollamaMenuItem?.state = .off
+                } else {
+                    self.ollamaMenuItem?.title = "Ollama Smart Cleanup"
+                    self.ollamaMenuItem?.action = #selector(self.toggleOllama)
+                    self.ollamaMenuItem?.state = enabled ? .on : .off
+                }
             }
             .store(in: &cancellables)
 

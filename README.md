@@ -69,20 +69,17 @@ The HUD at the bottom of your screen shows:
 
 ## Optional: Ollama Smart Cleanup
 
-Ollama removes filler words, fixes grammar, and handles formatting commands like *"make this a list"*.
+Ollama removes filler words, fixes grammar, and handles formatting commands. LocalVoice auto-detects Ollama on startup.
 
-```bash
-# Install
-brew install ollama
+### Setup
+1. **Install:** `brew install ollama`
+2. **Start:** `ollama serve` (or run the app)
+3. **Pull Model:** `ollama pull llama3.2:3b`
 
-# Pull the cleanup model (~2 GB)
-ollama pull llama3.2:3b
-
-# Start the server (add to login items for persistence)
-ollama serve
-```
-
-LocalVoice auto-detects Ollama on startup. The menu-bar icon shows **Ollama: running ✓** when active.
+### Configuration
+- **Toggle:** Click the microphone icon in the menu bar and select **"Ollama Smart Cleanup"** to enable/disable it.
+- **Persistence:** The app remembers your enabled/disabled preference across launches.
+- **Status:** If Ollama is not detected, the menu bar will display **"Ollama: not running — tap to install"**. Clicking this provides a reminder of the setup steps.
 
 ---
 

@@ -36,6 +36,9 @@ final class AppState: ObservableObject {
     @Published var ollamaAvailable: Bool = false
     @Published var availableDevices: [AudioDevice] = []
     @Published var selectedDeviceID: UInt32?
+    @Published var ollamaEnabled: Bool = UserDefaults.standard.bool(forKey: "ollamaEnabled") {
+        didSet { UserDefaults.standard.set(ollamaEnabled, forKey: "ollamaEnabled") }
+    }
 
     private var keyListener: GlobalKeyListener?
     private var activeRecorder: AudioRecorder?
@@ -55,8 +58,8 @@ final class AppState: ObservableObject {
     func refreshDevices() {
         availableDevices = AudioDeviceFinder.findInputDevices()
         if selectedDeviceID == nil {
-            // Default to system default or first available
-            selectedDeviceID = availableDevices.first?.id
+            // Default to system default input device
+            selectedDeviceID = AudioDeviceFinder.getDefaultInputDeviceID()
         }
     }
 
@@ -105,20 +108,22 @@ final class AppState: ObservableObject {
 
         do {
             let rawText = try await transcriber.transcribe(samples: samples)
-            var text = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !text.isEmpty else { phase = .idle; return }
+            let rawTrimmed = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !rawTrimmed.isEmpty else { phase = .idle; return }
 
-            if ollamaAvailable {
+            var finalOutput = "Raw: \(rawTrimmed)"
+            
+            if ollamaAvailable && ollamaEnabled {
                 phase = .cleaning
-                if let cleaned = try? await transformer.clean(text: text) {
-                    text = cleaned
+                if let cleaned = try? await transformer.clean(text: rawTrimmed) {
+                    finalOutput += "\n\nCleaned: \(cleaned)"
                 }
             }
 
             phase = .injecting
-            lastTranscript = text
-            print("LocalVoice: Injecting text: \"\(text)\"")
-            await TextInjector.inject(text: text)
+            lastTranscript = finalOutput
+            print("LocalVoice: Injecting output: \"\(finalOutput)\"")
+            await TextInjector.inject(text: finalOutput)
 
         } catch TranscriberError.silence {
             phase = .error("No audio detected. Is your mic muted or lid closed?")
