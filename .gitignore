@@ -1,0 +1,41 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Xcode
+build/
+DerivedData/
+*.hmap
+*.ipa
+*.plist.bak
+*.moved-aside
+*.xcuserstate
+*.xccheckout
+*.xcscheme
+!default.xcscheme
+*.xcworkspace
+!contents.xcworkspacedata
+xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# XcodeGen
+LocalVoice.xcodeproj/
+
+# IDEs
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+
+# Local Voice Cache
+.cache/

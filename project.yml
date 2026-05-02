@@ -1,0 +1,36 @@
+name: LocalVoice
+options:
+  bundleIdPrefix: com.localvoice
+  deploymentTarget:
+    macOS: "14.0"
+  defaultConfig: Debug
+
+packages:
+  WhisperKit:
+    url: https://github.com/argmaxinc/WhisperKit
+    from: "0.9.0"
+
+targets:
+  LocalVoice:
+    type: application
+    platform: macOS
+    sources: LocalVoice
+    info:
+      path: LocalVoice/Info.plist
+      properties:
+        LSUIElement: true
+        NSPrincipalClass: NSApplication
+        NSMicrophoneUsageDescription: "LocalVoice uses the microphone for speech-to-text transcription. Audio never leaves your device."
+        NSAppleEventsUsageDescription: "LocalVoice needs accessibility access to inject text into other applications."
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.localvoice.app
+        SWIFT_VERSION: "5"
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        CODE_SIGN_IDENTITY: ""
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: YES
+        ENABLE_HARDENED_RUNTIME: NO
+    dependencies:
+      - package: WhisperKit
+        product: WhisperKit
